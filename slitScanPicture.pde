@@ -53,7 +53,7 @@ void updateOutput(color[] scanedColors, PGraphics _output){
 	}
 	_output.updatePixels();
 	update_x++;
-	update_x %= input_w*3;
+	update_x %= output_w;
 }
 
 color[] getScanPixels(PImage _input, PGraphics _filter, int[] x){
