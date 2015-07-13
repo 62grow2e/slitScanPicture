@@ -1,3 +1,6 @@
+// slitScanPicture
+// coded by 62grow2e(Yota Odaka)
+
 import processing.video.*;
 Capture cap;
 
@@ -6,6 +9,8 @@ int update_x;
 PGraphics input, output, filter;
 
 void setup() {
+	fps = 60;
+	frameRate(fps);
 	String[] cameras = Capture.list();
 	for(int i = 0; i < cameras.length; i++){
 		println(i, cameras[i]);
@@ -31,13 +36,28 @@ void draw() {
 	if(cap.available())cap.read();
 
 	updateInput(cap, input);
-	updateOutput(getScanPixels(input, filter), output);
+	updateOutput(getScanPixels(input, filter, getScanPos(input, output)), output);
+	//updateOutput(getScanPixels(input, filter), output); // これでも一応動く
 
 	image(input, 0, 0);
 	image(output, 0, input_h);
 	image(filter, 0, 0);
 
 	if(update_x == 0)saveOutput();
+}
+
+PVector[] getScanPos(PImage _input, PImage _output){
+	PVector[] _pos = new PVector[_output.height];
+	// _input内の座標のみで_posのxとyを決めてください！！
+	// 以下を書き換えてください！
+
+	// ！！！！！ここから！！！！！
+	for(int i = 0; i < _pos.length; i++){
+		_pos[i] = new PVector(_input.width/2, i); // (引数1, 引数2) = (X, Y)
+	}
+	// ！！！！！ここまで！！！！！
+
+	return _pos;
 }
 
 void updateInput(PImage capture, PGraphics _input){
@@ -56,16 +76,25 @@ void updateOutput(color[] scanedColors, PGraphics _output){
 	update_x %= output_w;
 }
 
-color[] getScanPixels(PImage _input, PGraphics _filter, int[] x){
+color[] getScanPixels(PImage _input, PGraphics _filter, PVector[] _pos){
+	/* 
+	// 一応エラー処理入れてみた
+	for(int i = 0; i < _pos.length; i++){
+		if(_pos[i].x<0||_input.width<_pos[i].x||_pos[i].y<0||_input.height<_pos[i].x){
+			color[] c = new color[_pos.length];
+			for(color _c : c)_c = color(0);
+			return c; 
+		}
+	}*/
 	color[] clrs = new color[_input.height];
 	_filter.beginDraw();
 	_filter.loadPixels();
 	_filter.background(0, 0);
 
 	_input.loadPixels();
-	for(int i = 0; i < _input.height; i++){
-		clrs[i] = _input.pixels[i*_input.width+x[i]];
-		_filter.pixels[i*_input.width+x[i]] = color(#ff0000);
+	for(int i = 0; i < _pos.length; i++){
+		clrs[i] = _input.pixels[(int)_pos[i].y*_input.width+(int)_pos[i].x];
+		_filter.pixels[(int)_pos[i].y*_input.width+(int)_pos[i].x] = color(255*(1-(float)i/_pos.length), 0, 255*(float)i/_pos.length);
 	}
 	_filter.updatePixels();
 	_filter.endDraw();
@@ -73,11 +102,11 @@ color[] getScanPixels(PImage _input, PGraphics _filter, int[] x){
 }
 
 color[] getScanPixels(PImage _input, PGraphics _filter){
-	int[] x = new int[_input.height];
-	for(int i = 0; i< _input.height; i++){
-		x[i] = _input.width/2;
+	PVector[] _pos = new PVector[_input.height];
+	for(int i = 0; i< _pos.length; i++){
+		_pos[i] = new PVector(input.width/2, i);
 	}
-	return getScanPixels(_input, _filter, x);
+	return getScanPixels(_input, _filter, _pos);
 }
 
 void saveOutput(){
@@ -88,7 +117,7 @@ void saveOutput(){
 	String minute = (minute()<10)?"0"+str(minute()): str(minute());
 	String second = (second()<10)?"0"+str(second()): str(second());
 
-	String filename = "images/breath-"+year()+month+day+hour+minute+second+".jpg";
+	String filename = "images/slitscan-"+year()+month+day+hour+minute+second+".jpg";
 
 	output.save(filename);
 	println("frame saved as "+filename+".");
