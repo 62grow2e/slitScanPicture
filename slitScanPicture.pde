@@ -44,9 +44,13 @@ void draw() {
   //updateOutput(getScanPixels(input, filter), output); // これでも一応動く
 
   // display
+  pushMatrix();
+  translate(input_w, 0);
+  scale(-1, 1);
   image(input, 0, 0);
-  image(output, 0, input_h);
   image(filter, 0, 0);
+  popMatrix();
+  image(output, 0, input_h);
 
   // save
   if (update_x == 0)saveOutput();
