@@ -8,6 +8,8 @@ int input_w, input_h, output_w, output_h, fps;
 int update_x;
 PGraphics input, output, filter;
 
+boolean isMirror = true;
+
 void setup() {
   // set frame per sec
   fps = 30;
@@ -44,16 +46,28 @@ void draw() {
   //updateOutput(getScanPixels(input, filter), output); // これでも一応動く
 
   // display
-  pushMatrix();
-  translate(input_w, 0);
-  scale(-1, 1);
-  image(input, 0, 0);
-  image(filter, 0, 0);
-  popMatrix();
+  if(isMirror){
+    pushMatrix();
+    translate(input_w, 0);
+    scale(-1, 1);
+    image(input, 0, 0);
+    image(filter, 0, 0);
+    popMatrix();
+  }
+  else {
+    image(input, 0, 0);
+    image(filter, 0, 0);
+  }
   image(output, 0, input_h);
 
   // save
   if (update_x == 0)saveOutput();
+}
+
+// switch mirror
+void keyPressed(){
+  if(key == 's')saveOutput();
+  else if(key == 'm')isMirror = !isMirror;
 }
 
 // decide coordinates to scan a input image
