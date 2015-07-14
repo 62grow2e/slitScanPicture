@@ -29,9 +29,9 @@ void setup() {
 
 	filter = createGraphics(input_w, input_h);
 	input = createGraphics(input_w, input_h);
-	output = createGraphics(output_w*3, output_h);
+	output = createGraphics(output_w, output_h);
 
-	size(output_w, input_h+output_h);
+	size((output_w>input_w)?output_w:input_w, input_h+output_h);
 }
 
 void draw() {
