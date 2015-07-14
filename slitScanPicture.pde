@@ -113,7 +113,7 @@ color[] getScanPixels(PImage _input, PGraphics _filter, PVector[] _pos){
 	return clrs;
 }
 
-// with no 3rd parameter, scan a virtical center line of a input image
+// with no 3rd parameter, scan a vertical center line of a input image
 // 第3引数を指定しない場合はx座標の中心の色をスキャンします
 color[] getScanPixels(PImage _input, PGraphics _filter){
 	PVector[] _pos = new PVector[_input.height];
