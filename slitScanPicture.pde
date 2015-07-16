@@ -16,12 +16,12 @@ void setup() {
   frameRate(fps);
   // setup of camera
   String[] cameras = Capture.list();
-  for (int i = 0; i < cameras.length; i++) {
+  for(int i = 0; i < cameras.length; i++){
     println(i, cameras[i]);
   }
   cap = new Capture(this, cameras[0]);
   cap.start();
-  while (!cap.available ())delay(1);
+  while(!cap.available())delay(1);
 
   // init canvases
   input_w = 640;
@@ -38,7 +38,7 @@ void setup() {
 
 void draw() {
   // update capture event
-  if (cap.available())cap.read();
+  if(cap.available())cap.read();
 
   // update
   updateInput(cap, input);
@@ -72,13 +72,13 @@ void keyPressed(){
 
 // decide coordinates to scan a input image
 // スキャンする座標を決めます
-PVector[] getScanPos(PImage _input, PImage _output) {
+PVector[] getScanPos(PImage _input, PImage _output){
   PVector[] _pos = new PVector[_output.height];
   // _input内の座標のみで_posのxとyを決めてください！！
   // 以下を書き換えてください！
 
   // ！！！！！ここから！！！！！
-  for (int i = 0; i < _pos.length; i++) {
+  for(int i = 0; i < _pos.length; i++){
     _pos[i] = new PVector(_input.width/2, i); // (引数1, 引数2) = (X, Y)
   }
   // ！！！！！ここまで！！！！！
@@ -87,16 +87,16 @@ PVector[] getScanPos(PImage _input, PImage _output) {
 }
 
 // update a target image
-void updateInput(PImage capture, PGraphics _input) {
+void updateInput(PImage capture, PGraphics _input){
   _input.beginDraw();
   _input.image(capture, 0, 0, _input.width, _input.height);
   _input.endDraw();
 }
 
 // integrate lines which are scaned into a output image
-void updateOutput(color[] scanedColors, PGraphics _output) {
+void updateOutput(color[] scanedColors, PGraphics _output){
   _output.loadPixels();
-  for (int i = 0; i < _output.height; i++) {
+  for(int i = 0; i < _output.height; i++){
     _output.pixels[i*_output.width+update_x] = scanedColors[i];
   }
   _output.updatePixels();
@@ -106,23 +106,23 @@ void updateOutput(color[] scanedColors, PGraphics _output) {
 
 // scan a input image and return it's colors according to the 3rd parameter
 // 第3引数の座標をスキャンします
-color[] getScanPixels(PImage _input, PGraphics _filter, PVector[] _pos) {
+color[] getScanPixels(PImage _input, PGraphics _filter, PVector[] _pos){
   /* 
-   	// 一応エラー処理入れてみた 動作確認していません
-   	for(int i = 0; i < _pos.length; i++){
-   		if(_pos[i].x<0||_input.width<_pos[i].x||_pos[i].y<0||_input.height<_pos[i].x){
-   			color[] c = new color[_pos.length];
-   			for(color _c : c)_c = color(0);
-   			return c; 
-   		}
-   	}*/
+  // 一応エラー処理入れてみた 動作確認していません
+  for(int i = 0; i < _pos.length; i++){
+    if(_pos[i].x<0||_input.width<_pos[i].x||_pos[i].y<0||_input.height<_pos[i].x){
+      color[] c = new color[_pos.length];
+      for(color _c : c)_c = color(0);
+      return c; 
+    }
+  }*/
   color[] clrs = new color[_input.height];
   _filter.beginDraw();
   _filter.loadPixels();
   _filter.background(0, 0);
 
   _input.loadPixels();
-  for (int i = 0; i < _pos.length; i++) {
+  for(int i = 0; i < _pos.length; i++){
     clrs[i] = _input.pixels[(int)_pos[i].y*_input.width+(int)_pos[i].x];
     _filter.pixels[(int)_pos[i].y*_input.width+(int)_pos[i].x] = color(255*(1-(float)i/_pos.length), 0, 255*(float)i/_pos.length);
   }
@@ -133,16 +133,16 @@ color[] getScanPixels(PImage _input, PGraphics _filter, PVector[] _pos) {
 
 // with no 3rd parameter, scan a vertical center line of a input image
 // 第3引数を指定しない場合はx座標の中心の色をスキャンします
-color[] getScanPixels(PImage _input, PGraphics _filter) {
+color[] getScanPixels(PImage _input, PGraphics _filter){
   PVector[] _pos = new PVector[_input.height];
-  for (int i = 0; i< _pos.length; i++) {
+  for(int i = 0; i< _pos.length; i++){
     _pos[i] = new PVector(input.width/2, i);
   }
   return getScanPixels(_input, _filter, _pos);
 }
 
 // save output in sketch directory/images
-void saveOutput() {
+void saveOutput(){
   String month = (month()<10)?"0"+str(month()): str(month());
   String day = (day()<10)?"0"+str(day()): str(day());
   String hour = (hour()<10)?"0"+str(hour()): str(hour());
@@ -154,4 +154,3 @@ void saveOutput() {
   output.save(filename);
   println("saved a integrated image as "+filename+".");
 }
-
